@@ -37,4 +37,5 @@ for ii in range(0, len(processNames)-1) :
 
 jsonStringProcessesToClose = json.dumps(processesToCLose, separators=(',', ':'));
 
-requests.post(url = "http://localhost:3001?wrongProcessesopen=" + bool(processesToCLose), jsonStringProcessesToClose)
+if bool(processesToCLose)
+	requests.post(url = "http://localhost:3001", jsonStringProcessesToClose)
