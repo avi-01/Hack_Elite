@@ -39,9 +39,41 @@ app.get('/website',(req,res)=>{
     const msg= JSON.stringify(message)
     console.log(msg)
     send("website",msg)
+    res.send()
+})
+
+app.get('/youtube',(req,res)=>{
+    const title = req.query.title
+    const bool = req.query.bool
+
+    const message = {
+        title,
+        bool
+    }
+
+    const msg= JSON.stringify(message)
+    console.log(msg)
+    send("youtube",msg)'
+    res.send(200)
 
 })
 
+
+app.get('/process',(req,res)=>{
+    const list = req.body
+    const bool = req.query.bool
+
+    const message = {
+        list: JSON.parse(list),
+        bool
+    }
+
+    const msg= JSON.stringify(message)
+    console.log(msg)
+    send("process",msg)
+    res.send(200)
+
+})
 
 app.get('/',(req,res)=>{
     res.send("Hello")

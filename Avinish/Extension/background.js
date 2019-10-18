@@ -45,17 +45,73 @@ const skipDomain = ["www.google.com",
 ]
 
 
+const youtubeAllowedtag = [
+    "Music"
+    ,"News & Politics"
+    ,"Education"
+    ,"Science & Technology"]
+
+
 function post(url){
     var xhr = new XMLHttpRequest();
     xhr.open("GET", url, true);
     xhr.send();
 }
 
+function httpGet(theUrl)
+{
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", theUrl, false );
+    xmlHttp.send();
+    return xmlHttp.responseText;
+}
+
+function handle_youtube(url)
+{
+    const result = url.split("v=")[1]
+    if(!result)
+    {
+        const url = decodeURIComponent('http://localhost:3001/website?domain=youtube.com&bool=true')   
+        post(url)
+        return;
+    }   
+    
+    const res = httpGet("https://www.googleapis.com/youtube/v3/videos?part=snippet&id="+result+"&key=AIzaSyAa_7dOv2a4wNBtImGiI58sIyNhPoehPwk&type=video")
+
+    const resJSON = JSON.parse(res)
+    // console.log(resJSON)    
+    const title = resJSON.items[0].snippet.title
+    const catId = resJSON.items[0].snippet.categoryId
+
+    const catRes = httpGet("https://www.googleapis.com/youtube/v3/videoCategories?key=AIzaSyAa_7dOv2a4wNBtImGiI58sIyNhPoehPwk&part=snippet&id="+catId)
+
+    const catJSON = JSON.parse(catRes)
+    const cat = catJSON.items[0].snippet.title
+
+    if(youtubeAllowedtag.includes(cat))
+    {
+        const youtubeUrl = decodeURIComponent('http://localhost:3001/youtube?title='+title+'&bool='+true)
+        post(youtubeUrl)
+        return
+    }
+    
+    const youtubeUrl = decodeURIComponent('http://localhost:3001/youtube?title='+title+'&bool='+false)  
+    post(youtubeUrl)
+    return
+
+    // console.log()
+
+}
 
 function check(url)
 {
     var domain = url.replace('http://','').replace('https://','').split(/[/?#]/)[0];
 
+    if(domain == "youtube.com" || domain == "www.youtube.com")
+    {
+        handle_youtube(url)
+        return;
+    }
     console.log(domain)
 
     if(skipDomain.includes(domain))
