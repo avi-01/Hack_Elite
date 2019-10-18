@@ -25,4 +25,4 @@ tutorials
 learn-next
 intellij
 ide
-ApplicationFrameHost
+ApplicationFrameHostspotify

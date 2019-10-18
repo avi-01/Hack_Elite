@@ -1,5 +1,7 @@
 import subprocess
 import re
+import requests
+import json
 
 allowedProcesses = []
 file = open("allowedProcesses.txt", "r")
@@ -33,8 +35,6 @@ for ii in range(0, len(processNames)-1) :
 	if not bool(result) :
 		processesToCLose.append(runningProcess);
 
-if bool(processesToCLose) :
-	# Send in the queue the details of the process and false value for isEverythingOkay
-	print(processesToCLose)
-else :
-	# send in the queue true for isEverythingOkay and an empty list 
+jsonStringProcessesToClose = json.dumps(processesToCLose, separators=(',', ':'));
+
+requests.post(url = "http://localhost:3001?wrongProcessesopen=" + bool(processesToCLose), jsonStringProcessesToClose)
