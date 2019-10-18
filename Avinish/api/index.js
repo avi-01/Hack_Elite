@@ -53,8 +53,8 @@ app.get('/youtube',(req,res)=>{
 
     const msg= JSON.stringify(message)
     console.log(msg)
-    send("youtube",msg)'
-    res.send(200)
+    send("youtube",msg)
+    res.send()
 
 })
 
@@ -71,7 +71,7 @@ app.get('/process',(req,res)=>{
     const msg= JSON.stringify(message)
     console.log(msg)
     send("process",msg)
-    res.send(200)
+    res.send()
 
 })
 
