@@ -12,6 +12,8 @@ import pika
 import json
 
 
+flag=1
+
 def rabbit(msg):
     connection = pika.BlockingConnection(
     pika.ConnectionParameters(host='localhost'))
@@ -93,6 +95,7 @@ def get_gaze_ratio(eye_points , facial_landmarks,frame):
 
 class track(Thread):
     def run(self):
+        global flag
         cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
         net = cv2.dnn.readNetFromCaffe("deploy.prototxt.txt", "res10_300x300_ssd_iter_140000.caffemodel")
         detector = dlib.get_frontal_face_detector()
@@ -119,6 +122,8 @@ class track(Thread):
         noFace = False
         start_time = time.time()
         while True:
+            if flag == 0:
+                break
             frame_count+=1
             _, frame = cap.read()
             gray = cv2.cvtColor(frame , cv2.COLOR_BGR2GRAY)
@@ -232,10 +237,10 @@ class track(Thread):
                 #cv2.putText(frame , str(gaze_ratio_right) , (50 , 250) , font , 2 , (0 , 0 , 255) , 3)
                 cv2.putText(frame , str(gaze_ratio) , (50 , 150) , font , 2 , (0 , 0 , 255) , 3)
             
-            cv2.imshow("Frame" , frame)
+            # cv2.imshow("Frame" , frame)
             
-            if cv2.waitKey(1) & 0xFF == ord("q"):
-                break
+            # if cv2.waitKey(1) & 0xFF == ord("q"):
+            #     break
 
         cap.release()
         end_time = time.time()
@@ -246,7 +251,10 @@ class track(Thread):
         print(blink_frequency)
         print(blink_frec_5)
         blink_frec_5_j = json.dumps(blink_frec_5)
-        cv2.destroyAllWindows()
+    def stop(self):
+            global flag
+            flag = 0
+            cv2.destroyAllWindows()
         
 
 

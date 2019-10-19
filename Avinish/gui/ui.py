@@ -1,17 +1,28 @@
 import tkinter as tk
 from tkinter import *
+import tkinter.messagebox as tm
 import json 
 import requests
+import multiprocessing
+from threading import Thread
+import sys
+import gaze_dnn
+import time
+import receive
+
 back = '#454647'
 titleBack = '#343b80'
 startClick = 0
 
 logInToken = ""
-
 r =tk.Tk()
 contentFrame = Frame(r, bg=back)
+
+
+
+
 class eyeDetails :
-	def __init__(self) :
+	def __init__(self):
 		global contentFrame
 		contentFrame.destroy()
 		contentFrame = Frame(r, bg=back)
@@ -40,64 +51,74 @@ class plot:
 		panel.pack(side = "TOP", fill = "both", expand = "yes")
 
 
-def onOFF():
-    global startClick 
-    startClick+=1
-    if(startClick%2==1):
-        start()
-    else:
-        stop()
-    
-
-def start():
-    onOFFButton.configure(text='Stop')
-    
-def stop():
-    onOFFButton.configure(text='Start')
-
 class dashboard:
-	def __init__(self):
-		r.title('Destello')
-		r.configure(background=back)
-		r.geometry("800x600")
+    def __init__(self):
+        self.bottomFrame = Frame(r,bg=back,padx=20,pady=30)
+        self.onOFFButton = Button(self.bottomFrame,text='Start',width=20,height=2,bg=titleBack,fg='white',font=(None,11,'bold'),border=0,command=self.onOFF)
+        self.onOFFButton.pack(side=RIGHT)
+        self.bottomFrame.pack(side=BOTTOM,fill=X)
+        r.title('Destello')
+        r.configure(background=back)
+        r.geometry("800x600")
 
-		titleFrame = Frame(r,bg=titleBack)
-		titleFrame.pack(side=TOP, fill=X,ipady=2)
+        titleFrame = Frame(r,bg=titleBack)
+        titleFrame.pack(side=TOP, fill=X,ipady=2)
 
-		title = Label(titleFrame,text="Destello",bg=titleBack,fg="white",font=('Woodcut', 18,'italic'))
-		title.pack(fill=X)
+        title = Label(titleFrame,text="Destello",bg=titleBack,fg="white",font=('Woodcut', 18,'italic'))
+        title.pack(fill=X)
 
-		topdown = Frame(r,height=10)
-		eyeHealthButton = Button(topdown, text = 'Eye Health',width=20,height=2,bg="green",relief=SUNKEN,fg='white',font=(None,11,'bold'),border=0, command=eyeDetails) # add command to execute
-		eyeHealthButton.pack(side=LEFT, padx = 8, pady = 10, fill=X)
+        topdown = Frame(r,height=10)
+        eyeHealthButton = Button(topdown, text = 'Eye Health',width=20,height=2,bg="green",relief=SUNKEN,fg='white',font=(None,11,'bold'),border=0, command=eyeDetails) # add command to execute
+        eyeHealthButton.pack(side=LEFT, padx = 8, pady = 10, fill=X)
 
-		seperator = Label(topdown, text = ' History ',width=20,height=2,bg="green",relief=SUNKEN,fg='white',font=(None,11,'bold'),border=0)
-		seperator.pack(side = LEFT, padx = 8, pady = 10)
+        seperator = Label(topdown, text = ' History ',width=20,height=2,bg="green",relief=SUNKEN,fg='white',font=(None,11,'bold'),border=0)
+        seperator.pack(side = LEFT, padx = 8, pady = 10)
 
-		historyOptions = StringVar(r)
-		historyOptions.set("Select") # default value
+        historyOptions = StringVar(r)
+        historyOptions.set("Select")
 
-		def on_field_change(*args):
-			print("value changed to " + historyOptions.get())
-			history()
-		historyOptions.trace('w', on_field_change)
 
-		historyDropdown = OptionMenu(topdown, historyOptions, "Past 24 hrs", "Past 30 days ") # add command to execute
-		historyDropdown.pack(side = LEFT, padx = 8, pady = 10)
-		addExceptionAppButton = Button(topdown, text = "Add exception app") # add command to execute
-		addExceptionAppButton.pack(side=LEFT, padx = 8, pady = 3)
+        historyDropdown = OptionMenu(topdown, historyOptions, "Past 24 hrs", "Past 30 days ")
+        historyDropdown.pack(side = LEFT, padx = 8, pady = 10)
+        addExceptionAppButton = Button(topdown, text = "Add exception app")
+        addExceptionAppButton.pack(side=LEFT, padx = 8, pady = 3)
 
-		logoutButton = Button(topdown, text = "Logout") # add command to execute
-		logoutButton.pack(side=LEFT, padx = 8, pady = 3, fill=X)
+        logoutButton = Button(topdown, text = "Logout")
+        logoutButton.pack(side=LEFT, padx = 8, pady = 3, fill=X)
 
-		topdown.pack(side=TOP, fill=X)
+        topdown.pack(side=TOP, fill=X)
 
-		bottomFrame = Frame(r,bg=back,padx=20,pady=30)
-		onOFFButton = Button(bottomFrame,text='Start',width=20,height=2,bg=titleBack,fg='white',font=(None,11,'bold'),border=0,command=onOFF)
-		onOFFButton.pack(side=RIGHT)
-		bottomFrame.pack(side=BOTTOM,fill=X)
+        
+        def on_field_change(self,*args):
+            print("value changed to " + historyOptions.get())
+            history()
+        historyOptions.trace('w', on_field_change)
 
-		r.mainloop()
+        r.mainloop()
+
+    def onOFF(self):
+        global startClick 
+        startClick+=1
+        if(startClick%2==1):
+            self.start()
+        else:
+            self.stop()
+
+    def start(self):
+        self.onOFFButton.configure(text='Stop')
+        self.t2 = gaze_dnn.track()
+        self.t1 = receive.alert()
+        # try:
+        self.t1.start()
+        self.t2.start()
+        #     while True: time.sleep(100)
+        # except (KeyboardInterrupt, SystemExit):
+        #     print('\n! Received keyboard interrupt, quitting threads.\n')
+            
+    def stop(self):
+        self.onOFFButton.configure(text='Start')
+        self.t2.stop()
+        self.t1.stop()
 
 class LoginFrame(Frame):
     def __init__(self, master):
@@ -138,10 +159,13 @@ class LoginFrame(Frame):
         res = requests.post(url = url , json = data) 
         print(res.text)
         resJSON = json.loads(res.text) 
+        print(resJSON)
         if resJSON == {}:
             tm.showerror("Login error", "Incorrect email")
         else:
             saveToken(resJSON['token'])
+            self.destroy()
+            dash = dashboard()
         # if email == "john" and password == "password":
         #     tm.showinfo("Login info", "Welcome John")
         # else:
@@ -149,7 +173,7 @@ class LoginFrame(Frame):
 
     def _signup_open(self):
         self.destroy()
-        SignupFrame(Frame)
+        SignupFrame(r)
 
 
 class SignupFrame(Frame):
@@ -191,14 +215,17 @@ class SignupFrame(Frame):
         dic = '{"name":"Avinish Kumar", "email":"avnish31may@gmail.com", "password":"test1234"}'
 
         data = json.loads(dic)
-        print(data)
+        # print(data)
         res = requests.post(url = url , json = data) 
         
         resJSON = json.loads(res.text) 
-        if resJSON == {}:
-            tm.showerror("Signup error", "Incorrect data")
+        # print(resJSON)
+        if resJSON['errmsg'] :
+            tm.showerror("Login error", "Incorrect email")
         else:
             saveToken(resJSON['token'])
+            self.destroy()
+            dash = dashboard()
         # if email == "john" and password == "password":
         #     tm.showinfo("Login info", "Welcome John")
         # else:
@@ -206,8 +233,8 @@ class SignupFrame(Frame):
 
     def _login_open(self):
         
-        self.destroy
-        lf = LoginFrame(Frame)
+        self.destroy()
+        lf = LoginFrame(r)
 
 def saveToken(str):
 	#TODO: enter relative path of file
@@ -217,16 +244,15 @@ def saveToken(str):
 
 class log():
     def __init__(self):
-        r = Tk()
         sf = SignupFrame(r)
         r.mainloop()
 
 with open('token.txt', 'r') as file:
     logInToken = file.read().replace('\n', '')
 
-if len(logInToken) :
+if len(logInToken):
 	print("Hello")
-	dashboard()
-else :
+	dash = dashboard()
+else:
 	print("NO")
 	log()
