@@ -38,6 +38,7 @@ class alert(Thread):
 
 t1 = alert()
 t2 = gaze_dnn.track()
+
 t1.start()
 t2.start()
 

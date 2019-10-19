@@ -118,6 +118,7 @@ class track(Thread):
         drowsiness = False
         noFace = False
         start_time = time.time()
+        cap.start()
         while True:
             frame_count+=1
             _, frame = cap.read()
@@ -234,11 +235,11 @@ class track(Thread):
             
             cv2.imshow("Frame" , frame)
             
-            key = cv2.waitKey(1)
-            if key == 27:
+            if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
-                
+
         cap.release()
+        cv2.destroyAllWindows()
         end_time = time.time()
         elapsed_time = end_time - start_time
         blink_frequency = blink/elapsed_time
@@ -247,7 +248,7 @@ class track(Thread):
         print(blink_frequency)
         print(blink_frec_5)
         blink_frec_5_j = json.dumps(blink_frec_5)
-        cv2.destroyAllWindows()
+        
 
 
 
