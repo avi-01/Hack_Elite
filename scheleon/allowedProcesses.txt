@@ -27,3 +27,6 @@ ide
 ApplicationFrameHostspotify
 Chrome
 Photos
+devenv
+python
+cmd
