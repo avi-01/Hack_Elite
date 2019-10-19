@@ -33,16 +33,6 @@ const userSchema = new mongoose.Schema({
             }
         }
     },
-    avgBlinkFreq:{
-        type: Number,
-        required: true,
-        trim: true,
-    },
-    eyeRthresh :{
-        type: Number,
-        required: true,
-        trim: true,
-    },
     tokens: [{
         token: {
             type: String,

@@ -5,7 +5,7 @@ const timeRouter = require('./routers/time')
 const userRouter = require('./routers/user')
 const historyRouter = require('./routers/history')
 
-const port = 3001
+const port = process.env.PORT || 3001
 const app = express()
 
 
