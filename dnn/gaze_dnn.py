@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # coding: utf-8
-
-
 import cv2
 import numpy as np
 import dlib
@@ -10,26 +8,21 @@ import time
 from threading import Thread
 import playsound
 import statistics as st
+import pika 
+import json
 
 
-cap = cv2.VideoCapture(0)
-net = cv2.dnn.readNetFromCaffe("deploy.prototxt.txt", "res10_300x300_ssd_iter_140000.caffemodel")
-detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+def rabbit(msg):
+    connection = pika.BlockingConnection(
+    pika.ConnectionParameters(host='localhost'))
+    channel = connection.channel()
 
-font = cv2.FONT_ITALIC
+    channel.queue_declare(queue='drowsiness')
 
-total_frame = frame_count = count = blink = frec = 0
+    channel.basic_publish(exchange='', routing_key='drowsiness', body=msg)
+    connection.close()
 
-max_drowzy_time = 80
 
-time_for_blink = 1800
-EYE_R_THRESH = 0.21
-FACE_MAX = 10000 #200*no_of_frames
-counter_face = 0
-avg_face = 0
-s=0
-counter_face1 = 0
 def alarm():
     playsound.playsound("alarm.wav")
 
@@ -52,7 +45,7 @@ def get_blinking_ratio(eye_points , facial_landmarks):
         
         return ratio
 
-def get_gaze_ratio(eye_points , facial_landmarks):
+def get_gaze_ratio(eye_points , facial_landmarks,frame):
      # gaze_detector
         eye_region = np.array([(facial_landmarks.part(eye_points[0]).x , facial_landmarks.part(eye_points[0]).y) ,
                                    (facial_landmarks.part(eye_points[1]).x , facial_landmarks.part(eye_points[1]).y ),
@@ -65,7 +58,7 @@ def get_gaze_ratio(eye_points , facial_landmarks):
                                            
         #cv2.polylines(frame , [left_eye_region] , True , (0 , 0 , 255) , 1)
 
-        
+        gray = cv2.cvtColor(frame , cv2.COLOR_BGR2GRAY)
         height , width,_ = frame.shape
         mask = np.zeros((height , width) , np.uint8)
         
@@ -91,125 +84,170 @@ def get_gaze_ratio(eye_points , facial_landmarks):
         
         if left_side_white == 0:
             gaze_ratio = 1
-        elif right_side_white ==0:
+        elif right_side_white == 0:
             gaze_ratio = 5
         else:
             gaze_ratio = left_side_white/right_side_white
 
         return gaze_ratio
-        
-start_time = time.time()
-            # counter_face+=1
-            # print("face {}".format(counter_face))
-            # if counter_face>=FACE_MAX:
-            #         t=Thread(target=alarm)
-            #         t.daemon=True
-            #         t.start()
-            #         cv2.putText(frame , "NO FACE DETECTED" , (50 , 200) ,font , 4 , (0 , 255 , 0))
-            #         t.join()
-            #         print("drow") 
-while True:
-    frame_count+=1
-    _, frame = cap.read()
-    gray = cv2.cvtColor(frame , cv2.COLOR_BGR2GRAY)
-    (h,w) = gray.shape[:2]
-    blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300,300)), 1.0, (300,300), (104.0, 177.0, 123.0))
-    net.setInput(blob)
-    detections = net.forward() 
-    # print(detections.shape)
-    for i in range(0, detections.shape[2]):
-        # print(detections)
-        # print("hello")
-        confidence = detections[0,0,i,2]
-        if confidence < 0.5:
-            counter_face+=1
-            if counter_face%FACE_MAX==0:
-                print("no face")   
-                t=Thread(target=alarm)
-                t.daemon=True
-                t.start()
-                cv2.putText(frame , "NO FACE DETECTED" , (50 , 200) ,font , 4 , (0 , 255 , 0))
-                t.join()
-            continue
+
+class track(Thread):
+    def run(self):
+        cap = cv2.VideoCapture(0)
+        net = cv2.dnn.readNetFromCaffe("deploy.prototxt.txt", "res10_300x300_ssd_iter_140000.caffemodel")
+        detector = dlib.get_frontal_face_detector()
+        predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+
+        font = cv2.FONT_ITALIC
+
+        total_frame = frame_count = count = blink = frec = 0
+
+        max_drowzy_time = 80
+
+        time_for_blink = 1800
+        EYE_R_THRESH = 0.21
+        FACE_MAX = 10000 #200*no_of_frames
         counter_face = 0
-        box = detections[0,0,i, 3:7]*np.array([w,h,w,h])
-        # print(box.shape)
-        (startX, startY, endX, endY) = box.astype("int")
-        rect = dlib.rectangle(startX, startY, endX, endY)
-        text = "{:.2f}".format(confidence*100)
-        y = startY - 10 if startY - 10 > 10 else startY + 10
-        # print("startX : {} startY : {} endX : {} endY : {}".format(startX,startY,endX,endY))
-        cv2.rectangle(frame,(startX,startY),(endX,endY),(0,255,0), 2)
-        cv2.putText(frame,text, (startX,y),cv2.FONT_HERSHEY_COMPLEX,0.45,(0,255,0),2)
+        avg_face = 0
+        s=0
+        counter_face1 = 0
+        cf_counter = 0
+        cb_counter = 0
+        blink_frec_5 = []
+        NO_FRAMES = 150        
+        drowsiness = False
+        noFace = False
+        start_time = time.time()
+        while True:
+            frame_count+=1
+            _, frame = cap.read()
+            gray = cv2.cvtColor(frame , cv2.COLOR_BGR2GRAY)
+            (h,w) = gray.shape[:2]
+            blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300,300)), 1.0, (300,300), (104.0, 177.0, 123.0))
+            net.setInput(blob)
+            detections = net.forward() 
+            # print(detections.shape)
+            cf_counter = cf_counter + 1
+            # print("frame {}".format(cf_counter))
+            for i in range(0, detections.shape[2]):
+                # print(detections)
+                # print("hello")
+                # FACE DETECTION
+                confidence = detections[0,0,i,2]
+                if confidence < 0.5:
+                    counter_face+=1
+                    if counter_face%FACE_MAX==0:
+                        if not noFace:
+                            rabbit("noFaceStart")
+                            noFace = True
+                        print("no face")   
+                        t=Thread(target=alarm)
+                        t.daemon=True
+                        t.start()
+                        cv2.putText(frame , "NO FACE DETECTED" , (50 , 200) ,font , 4 , (0 , 255 , 0))
+                        # t.join()
+                    continue
+                counter_face = 0
+                if noFace:
+                   rabbit("noFaceEnd")
+                   noFace = False
+                box = detections[0,0,i, 3:7]*np.array([w,h,w,h])
+                # print(box.shape)
+                (startX, startY, endX, endY) = box.astype("int")
+                rect = dlib.rectangle(startX, startY, endX, endY)
+                text = "{:.2f}".format(confidence*100)
+                y = startY - 10 if startY - 10 > 10 else startY + 10
+                # print("startX : {} startY : {} endX : {} endY : {}".format(startX,startY,endX,endY))
+                cv2.rectangle(frame,(startX,startY),(endX,endY),(0,255,0), 2)
+                cv2.putText(frame,text, (startX,y),cv2.FONT_HERSHEY_COMPLEX,0.45,(0,255,0),2)
 
-        landmarks = predictor(gray , rect)
-        
-        left_eye_ratio = get_blinking_ratio([36 , 37 , 38 , 39 , 40 ,41] , landmarks)
-        right_eye_ratio = get_blinking_ratio([42 , 43 , 44 , 45 , 46 , 47] , landmarks)
-        
-        if left_eye_ratio < EYE_R_THRESH or right_eye_ratio < EYE_R_THRESH:
-            cv2.putText(frame , "BLINKING" , (50 , 100) , font , 3 , (255 , 0 , 0) )
-            blink = blink + 1
-            count = count + 1
-            frec = frec + 1
-            print("eye {}".format(count))
-            if count % max_drowzy_time == 0:
-                t=Thread(target=alarm)
-                t.daemon=True
-                t.start()
-                cv2.putText(frame , "DROWZINESS DETECTED!!!!!" , (50 , 200) ,font , 4 , (0 , 255 , 0))
-                t.join()
-                # print("drow")
-                # count = 0
-            if frame_count >= time_for_blink:
-                blink_frequency = frec / 120
-                avg_blink_frequency = (blink * 30) / (total_frame)
-                print("avg blink frequency : " , avg_blink_frequency)
-                frame_count = 0
-        
-        else:
-            count = 40
-            count-=1
+                landmarks = predictor(gray , rect)
+                
+                left_eye_ratio = get_blinking_ratio([36 , 37 , 38 , 39 , 40 ,41] , landmarks)
+                right_eye_ratio = get_blinking_ratio([42 , 43 , 44 , 45 , 46 , 47] , landmarks)
+                
+                # cf_counter = cf_counter + 1
 
-    # frame_count = frame_count +1
-    
-    # faces = detector(gray)
-    # if len(faces)<=0:
-    #     counter_face+=1
-    #     if counter_face>=FACE_MAX:
-    #         cv2.putText(frame,"NO FACE", (10,30), font, 0.7,(0,255,0),1)       
-    # for face in faces:
-        
-        # x , y =face.left() , face.top()
-        # x1 , y1 = face.right() , face.bottom()
-    ### cv2.rectangle(frame , (x , y) , (x1 , y1) , (0 , 255 , 0) , 2)
+                if left_eye_ratio < EYE_R_THRESH or right_eye_ratio < EYE_R_THRESH:
+                    cb_counter = cb_counter + 1
+                    if cf_counter % NO_FRAMES==0:
+                        ##  (cb_counter / 600)
+                        blink_frec_5.append(cb_counter/600)
+                        cf_counter = 0
+                        cb_counter = 0
+                    cv2.putText(frame , "BLINKING" , (50 , 100) , font , 3 , (255 , 0 , 0) )
+                    blink = blink + 1
+                    count = count + 1
+                    frec = frec + 1
+                    # print("eye {}".format(count))
+                    if count % max_drowzy_time == 0:
+                        if not drowsiness:
+                            rabbit("drowStart")
+                            drowsiness = True
+                        t=Thread(target=alarm)
+                        t.daemon=True
+                        t.start()
+                        cv2.putText(frame , "DROWZINESS DETECTED!!!!!" , (50 , 200) ,font , 4 , (0 , 255 , 0))
+                        # t.join()    
+                        # print("drow")
+                        # count = 0
+                    # if frame_count >= time_for_blink:
+                    #     blink_frequency = frec / 120
+                    #     avg_blink_frequency = (blink * 30) / (total_frame)
+                    #     print("avg blink frequency : " , avg_blink_frequency)
+                    #     frame_count = 0
+                
+                else:
+                    # print(drowsiness)
+                    if drowsiness:
+                        rabbit("STOP")
+                        drowsiness = False
+                    count = 40
+                    count-=1
 
-        gaze_ratio_left = get_gaze_ratio([36 , 37 , 38 , 39 , 40 ,41] , landmarks)
-        gaze_ratio_right = get_gaze_ratio([42 , 43 , 44 , 45 , 46 , 47] , landmarks)
-        gaze_ratio = (gaze_ratio_right + gaze_ratio_left)/2
+            # frame_count = frame_count +1
+            
+            # faces = detector(gray)
+            # if len(faces)<=0:
+            #     counter_face+=1
+            #     if counter_face>=FACE_MAX:
+            #         cv2.putText(frame,"NO FACE", (10,30), font, 0.7,(0,255,0),1)       
+            # for face in faces:
+                
+                # x , y =face.left() , face.top()
+                # x1 , y1 = face.right() , face.bottom()
+            ### cv2.rectangle(frame , (x , y) , (x1 , y1) , (0 , 255 , 0) , 2)
 
-        if gaze_ratio < 1:
-            cv2.putText(frame , "right" , (50 , 250) , font , 2 , (0 , 0 , 255) , 3)
-        elif 1< gaze_ratio < 3:
-            cv2.putText(frame , "center" , (50 , 250) , font , 2 , (0 , 0 , 255) , 3)
-        else:
-            cv2.putText(frame , "left" , (50 , 250) , font , 2 , (0 , 0 , 255) , 3)
-    # cv2.putText(frame , str(gaze_ratio_left) , (50 , 150) , font , 2 , (0 , 0 , 255) , 3)
-        #cv2.putText(frame , str(gaze_ratio_right) , (50 , 250) , font , 2 , (0 , 0 , 255) , 3)
-        cv2.putText(frame , str(gaze_ratio) , (50 , 150) , font , 2 , (0 , 0 , 255) , 3)
-    
-    cv2.imshow("Frame" , frame)
-    
-    key = cv2.waitKey(1)
-    if key == 27:
-        break
-        
-cap.release()
-end_time = time.time()
-elapsed_time = end_time - start_time
-blink_frequency = blink/elapsed_time
-print(blink_frequency)
-cv2.destroyAllWindows()
+                gaze_ratio_left = get_gaze_ratio([36 , 37 , 38 , 39 , 40 ,41] , landmarks,frame)
+                gaze_ratio_right = get_gaze_ratio([42 , 43 , 44 , 45 , 46 , 47] , landmarks,frame)
+                gaze_ratio = (gaze_ratio_right + gaze_ratio_left)/2
+
+                # if gaze_ratio < 1:
+                #     cv2.putText(frame , "right" , (50 , 250) , font , 2 , (0 , 0 , 255) , 3)
+                # elif 1< gaze_ratio < 3:
+                #     cv2.putText(frame , "center" , (50 , 250) , font , 2 , (0 , 0 , 255) , 3)
+                # else:
+                #     cv2.putText(frame , "left" , (50 , 250) , font , 2 , (0 , 0 , 255) , 3)
+            # cv2.putText(frame , str(gaze_ratio_left) , (50 , 150) , font , 2 , (0 , 0 , 255) , 3)
+                #cv2.putText(frame , str(gaze_ratio_right) , (50 , 250) , font , 2 , (0 , 0 , 255) , 3)
+                cv2.putText(frame , str(gaze_ratio) , (50 , 150) , font , 2 , (0 , 0 , 255) , 3)
+            
+            cv2.imshow("Frame" , frame)
+            
+            key = cv2.waitKey(1)
+            if key == 27:
+                break
+                
+        cap.release()
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        blink_frequency = blink/elapsed_time
+        print(elapsed_time)
+        print(blink)
+        print(blink_frequency)
+        print(blink_frec_5)
+        blink_frec_5_j = json.dumps(blink_frec_5)
+        cv2.destroyAllWindows()
 
 
 
