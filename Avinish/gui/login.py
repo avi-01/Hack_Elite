@@ -19,7 +19,10 @@ class LoginFrame(Frame):
         self.entry_password.grid(row=1, column=1,pady=(10,0))
 
         self.logbtn = Button(self, text="Login", command=self._login_btn_clicked)
-        self.logbtn.grid(columnspan=2,pady=(30,0))
+        self.logbtn.grid(column=0,pady=(30,0))
+        
+        self.signbtn = Button(self, text="Signup", command=self._signup_open)
+        self.signbtn.grid(row=2,column=1,pady=(30,0))
 
         self.pack()
 
@@ -37,7 +40,7 @@ class LoginFrame(Frame):
         data = json.loads(dic)
         print(data)
         res = requests.post(url = url , json = data) 
-        
+        print(res.text)
         resJSON = json.loads(res.text) 
         if resJSON == {}:
             tm.showerror("Login error", "Incorrect email")
@@ -47,6 +50,10 @@ class LoginFrame(Frame):
         #     tm.showinfo("Login info", "Welcome John")
         # else:
         #     tm.showerror("Login error", "Incorrect email")
+
+    def _signup_open(self):
+        self.destroy()
+        SignupFrame(root)
 
 
 class SignupFrame(Frame):
@@ -69,9 +76,9 @@ class SignupFrame(Frame):
         self.entry_password.grid(row=2, column=1,pady=(10,0))
 
         self.signbtn = Button(self, text="Signup", command=self._signup_btn_clicked)
-        self.signbtn.grid(columnspan=2,pady=(30,0))
+        self.signbtn.grid(column=0,pady=(30,0))
         self.loginbtn = Button(self, text="Login", command=self._login_open)
-        self.loginbtn.grid(row=3,column=2,pady=(30,0))
+        self.loginbtn.grid(row=3,column=1,pady=(30,0))
 
         self.pack()
 
@@ -85,7 +92,7 @@ class SignupFrame(Frame):
 
         url = "http://localhost:3001/users"
         # dic = '{"name":"'+name+'","email":"'+email+'", "password":"'+password+'"}'
-        dic = '{"name":"Avinish Kumar", "email":"avnish31may@gmail.com", "password":"test1234"}'
+        dic = '{"name":"Avinish Kumar", "email":"avnishmay@gmail.com", "password":"test1234"}'
 
         data = json.loads(dic)
         print(data)
@@ -103,8 +110,8 @@ class SignupFrame(Frame):
 
     def _login_open(self):
         
-        self.destroy
-        lf = LoginFrame(root)
+        self.destroy()
+        lf = LoginFrame(root).pack()
 
 
 root = Tk()
