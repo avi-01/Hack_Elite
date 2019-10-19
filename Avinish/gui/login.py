@@ -13,13 +13,13 @@ class LoginFrame(Frame):
         self.entry_email = Entry(self)
         self.entry_password = Entry(self, show="*")
 
-        self.label_email.grid(row=0, sticky=E)
-        self.label_password.grid(row=1, sticky=E)
-        self.entry_email.grid(row=0, column=1)
-        self.entry_password.grid(row=1, column=1)
+        self.label_email.grid(row=0, sticky=E,pady=(70,0))
+        self.label_password.grid(row=1, sticky=E,pady=(10,0))
+        self.entry_email.grid(row=0, column=1,pady=(70,0))
+        self.entry_password.grid(row=1, column=1,pady=(10,0))
 
         self.logbtn = Button(self, text="Login", command=self._login_btn_clicked)
-        self.logbtn.grid(columnspan=2)
+        self.logbtn.grid(columnspan=2,pady=(30,0))
 
         self.pack()
 
