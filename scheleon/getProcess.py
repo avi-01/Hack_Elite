@@ -10,11 +10,11 @@ for name in file:
 	allowedProcesses.append(name)
 print(allowedProcesses)
 
-processNameSource = subprocess.Popen(["powershell","gps | ? {$_.mainwindowtitle} | select name | ft -AutoSize"],stdout=subprocess.PIPE);
-processMainWindowTitleSource = subprocess.Popen(["powershell","gps | ? {$_.mainwindowtitle} | mainwindowtitle | ft -AutoSize"],stdout=subprocess.PIPE);
+processNameSource = subprocess.Popen(["powershell","gps | ? {$_.mainwindowtitle} | select name | ft -AutoSize"],stdout=subprocess.PIPE)
+processMainWindowTitleSource = subprocess.Popen(["powershell","gps | ? {$_.mainwindowtitle} | mainwindowtitle | ft -AutoSize"],stdout=subprocess.PIPE)
 
-processNames = processNameSoucre.communicate()[0].decode('ascii').strip().split('\r\n')
-processMainWindowTitles = processMainWindowTitles.communicate()[0].decode('ascii').strip().split('\r\n')
+processNames = processNameSource.communicate()[0].decode('ascii').strip().split('\r\n')
+processMainWindowTitles = processMainWindowTitleSource.communicate()[0].decode('ascii').strip().split('\r\n')
 
 # removed Column titles : 'Names' from the list
 del processNames[0-2]
@@ -33,9 +33,10 @@ for ii in range(0, len(processNames)-1) :
 	runningProcess.append(processMainWindowTitles[ii])
 	result = [allowedProcessName for allowedProcessName in allowedProcesses if(allowedProcessName.lower() in runningProcess[0].lower() or runningProcess[0].lower() in allowedProcessName.lower())]
 	if not bool(result) :
-		processesToCLose.append(runningProcess);
+		processesToCLose.append(runningProcess)
 
-jsonStringProcessesToClose = json.dumps(processesToCLose, separators=(',', ':'));
+jsonStringProcessesToClose = json.dumps(processesToCLose, separators=(',', ':'))
+print(jsonStringProcessesToClose)
 
-if bool(processesToCLose)
-	requests.post(url = "http://localhost:3001", jsonStringProcessesToClose)
+# if bool(processesToCLose)
+# 	requests.post(url = "http://localhost:3001", jsonStringProcessesToClose)
