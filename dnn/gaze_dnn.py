@@ -93,7 +93,7 @@ def get_gaze_ratio(eye_points , facial_landmarks,frame):
 
 class track(Thread):
     def run(self):
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
         net = cv2.dnn.readNetFromCaffe("deploy.prototxt.txt", "res10_300x300_ssd_iter_140000.caffemodel")
         detector = dlib.get_frontal_face_detector()
         predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
@@ -118,7 +118,6 @@ class track(Thread):
         drowsiness = False
         noFace = False
         start_time = time.time()
-        cap.start()
         while True:
             frame_count+=1
             _, frame = cap.read()
@@ -239,7 +238,6 @@ class track(Thread):
                 break
 
         cap.release()
-        cv2.destroyAllWindows()
         end_time = time.time()
         elapsed_time = end_time - start_time
         blink_frequency = blink/elapsed_time
@@ -248,6 +246,7 @@ class track(Thread):
         print(blink_frequency)
         print(blink_frec_5)
         blink_frec_5_j = json.dumps(blink_frec_5)
+        cv2.destroyAllWindows()
         
 
 
