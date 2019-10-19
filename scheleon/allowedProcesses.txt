@@ -25,3 +25,5 @@ learn-next
 intellij
 ide
 ApplicationFrameHostspotify
+Chrome
+Photos
