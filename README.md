@@ -31,3 +31,5 @@
 - We would continue to work on this project even after the hacathon is over incooperating new ideas and features to this is just prototype and should not be considered as a production level code.
 - In the future we would also incooperate better UI and UX with individual user login and signup with gaze detection (which was not possible this time due to an absence of an HD camera).
 - With not just an windows based application in the future users will be able to access their profiles via websites and anroid apps as well.
+
+## **screenshots**
