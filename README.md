@@ -32,5 +32,9 @@
 - In the future we would also incooperate better UI and UX with individual user login and signup with gaze detection (which was not possible this time due to an absence of an HD camera).
 - With not just an windows based application in the future users will be able to access their profiles via websites and anroid apps as well.
 
+### **Challenges we faced**
+
+- The biggest challenge we faced was scanning the eye of the user with low resolution camera but with low specs and under appropriate conditions it can provide better accuracy. Then the next challenge was monitoring the processes which was difficult because there are a number of background apps running which windows won't allow to close. Then integrating all parts ML, process scanner, chrome extension was the toughest one. Thanks to RabbitMQ, it would have been impossible without it which provided realtime messaging service to which we used to communicate between all of the above mentioned parts. 
+
 ## **screenshots**
 
