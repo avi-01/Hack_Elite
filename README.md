@@ -26,6 +26,10 @@
 - **Desktop Application:** 
   In the laptop we will be displaying the data of his productiveness by tracking the processes happening in the laptop i.e whether the website he has opened has an educational tag or the user is reading a pdf and integrating this to our ML model for eye detection as explained above.
 
+### **Tech-stack used**
+
+RabbitMQ, MongoDB, NodeJs, Tkinter(for gui), ExpressJs, youtube's and a few other apis.
+
 ### **Future Scope**
 
 - We would continue to work on this project even after the hacathon is over incooperating new ideas and features to this is just prototype and should not be considered as a production level code.
@@ -35,6 +39,13 @@
 ### **Challenges we faced**
 
 - The biggest challenge we faced was scanning the eye of the user with low resolution camera but with low specs and under appropriate conditions it can provide better accuracy. Then the next challenge was monitoring the processes which was difficult because there are a number of background apps running which windows won't allow to close. Then integrating all parts ML, process scanner, chrome extension was the toughest one. Thanks to RabbitMQ, it would have been impossible without it which provided realtime messaging service to which we used to communicate between all of the above mentioned parts. 
+
+### ** Steps to Run**
+
+1. Start RabbitMq server
+2. Start mongodb server
+3. start Avinish/database/index.js with node
+4. Then just run Avinish/gui/ui.py with python
 
 ### **Screenshots**
 
