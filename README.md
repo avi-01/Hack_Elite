@@ -48,4 +48,8 @@ RabbitMQ, MongoDB, NodeJs, Tkinter(for gui), ExpressJs, youtube's and a few othe
 4. Then just run Avinish/gui/ui.py with python
 
 ### **Screenshots**
-
+![Image description1](capture.png)
+![Image description2](capture-1.png)
+![Image description3](capture2.png)
+![Image description4](capture-3.png)
+![Image description](capture-4.png)
