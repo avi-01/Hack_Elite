@@ -22,6 +22,7 @@ class alert(Thread):
         self.channel.queue_declare(queue='drowsiness')
         self.channel.queue_declare(queue='website')
         self.channel.queue_declare(queue='youtube')
+        self.channel.queue_declare(queue='blink')
 
         def callback_ml(ch, method, properties, body):
             if body == b'noFaceStart':
@@ -42,6 +43,11 @@ class alert(Thread):
             if web['bool'] == "false":
                 tm.showwarning("Youtube", "Wrong video opened:- "+web['title'])        
 
+        def callback_blink(ch, method, properties, body):
+            data = body.decode("utf-8")
+            web = json.loads(data)
+            file = open("blink.json", "w+")
+            file.write()
 
         def callback(ch, method, properties, body):
             print(" [x] Received {} {}".format(body,time.time()), flush=True)
@@ -57,6 +63,9 @@ class alert(Thread):
 
         self.channel.basic_consume(
             queue='drowsiness', on_message_callback=callback_ml, auto_ack=True)
+
+        self.channel.basic_consume(
+            queue='blink', on_message_callback=callback_blink, auto_ack=True)
 
 
         print(' [*] Waiting for messages. To exit press CTRL+C', flush=True)

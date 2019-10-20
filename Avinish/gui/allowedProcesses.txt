@@ -27,3 +27,4 @@ ide
 ApplicationFrameHostspotify
 Chrome
 Photos
+cmdCodeMongoDBCompassMongoDBCompasspython

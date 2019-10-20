@@ -10,6 +10,7 @@ import playsound
 import statistics as st
 import pika 
 import json
+import matplotlib.pyplot as plt
 
 
 flag=1
@@ -24,6 +25,15 @@ def rabbit(msg):
     channel.basic_publish(exchange='', routing_key='drowsiness', body=msg)
     connection.close()
 
+def rabbitBLink(msg):
+    connection = pika.BlockingConnection(
+    pika.ConnectionParameters(host='localhost'))
+    channel = connection.channel()
+
+    channel.queue_declare(queue='blink')
+
+    channel.basic_publish(exchange='', routing_key='blink', body=msg)
+    connection.close()
 
 def alarm():
     playsound.playsound("alarm.wav")
@@ -250,7 +260,20 @@ class track(Thread):
         print(blink)
         print(blink_frequency)
         print(blink_frec_5)
+        # blink_frec_5=[30 , 28  ,29 , 27 , 29 , 26  , 25 , 25,25,24,23,18,16,22,24 , 20 , 21 , 19 , 18 , 15 , 13 , 12 , 9 , 8 , 7 , 6 , 6 , 5 , 6 ,7 ]
+        # x = [0,5,10,15,25,30,35,40 , 45 , 50 , 55 , 60 , 65 , 70 , 75, 80 , 85 , 90 , 95 , 100 , 105 , 110 , 115  ,120 , 125 , 130 , 135 , 140 , 145 , 150]
+        # y = np.ones([30,])*18
+        # y1 = np.ones([30,])*8
+        # y2 = np.ones([30,])*24
+        # plt.plot(x,blink_frec_5)
+        # plt.plot(x,y,label = "average blink frequency")
+        # plt.plot(x,y1,label = "fatigue or stress")
+        # plt.plot(x,y2,label = "not concentrating")
+        # plt.ylabel("blink frequency after each 5 minutes")
+        # plt.legend()
+        # plt.savefig("plot1.jpg")
         blink_frec_5_j = json.dumps(blink_frec_5)
+        # rabbitBLink(blink_frec_5_j)
     def stop(self):
             global flag
             flag = 0

@@ -10,6 +10,8 @@ import gaze_dnn
 import time
 import receive
 import getProcess
+from PIL import *
+from PIL import ImageTk as itk
 
 back = '#454647'
 titleBack = '#343b80'
@@ -21,6 +23,10 @@ contentFrame = Frame(r, bg=back)
 
 
 
+def popupmsg(): 
+    background = 'plot1.jpg'
+    img = Image.open('plot1.jpg')
+    img.show()
 
 class eyeDetails :
 	def __init__(self):
@@ -47,7 +53,7 @@ class plot:
 		global contentFrame
 		contentFrame.destroy()
 		contentFrame = Frame(r, bg=back)
-		img = ImageTk.PhotoImage(Image.open("True1.gif"))
+		img = PhotoImage(Image.open("True1.gif"))
 		panel = Label(contentFrame, image = img)
 		panel.pack(side = "TOP", fill = "both", expand = "yes")
 
@@ -68,9 +74,9 @@ class dashboard:
         title = Label(titleFrame,text="Destello",bg=titleBack,fg="white",font=('Woodcut', 18,'italic'))
         title.pack(fill=X)
 
-        # topdown = Frame(r,height=10)
-        # eyeHealthButton = Button(topdown, text = 'Eye Health',width=20,height=2,bg="green",relief=SUNKEN,fg='white',font=(None,11,'bold'),border=0, command=eyeDetails) # add command to execute
-        # eyeHealthButton.pack(side=LEFT, padx = 8, pady = 10, fill=X)
+        topdown = Frame(r,height=10)
+        eyeHealthButton = Button(topdown, text = 'Eye Health',width=20,height=2,bg="green",relief=SUNKEN,fg='white',font=(None,11,'bold'),border=0, command=popupmsg) # add command to execute
+        eyeHealthButton.pack(side=LEFT, padx = 8, pady = 10, fill=X)
 
         # seperator = Label(topdown, text = ' History ',width=20,height=2,bg="green",relief=SUNKEN,fg='white',font=(None,11,'bold'),border=0)
         # seperator.pack(side = LEFT, padx = 8, pady = 10)
@@ -87,7 +93,7 @@ class dashboard:
         # logoutButton = Button(topdown, text = "Logout")
         # logoutButton.pack(side=LEFT, padx = 8, pady = 3, fill=X)
 
-        # topdown.pack(side=TOP, fill=X)
+        topdown.pack(side=TOP, fill=X)
 
         
         # def on_field_change(self,*args):
