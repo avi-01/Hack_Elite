@@ -35,8 +35,18 @@ def piechart(a):
 
     figureObject, axesObject = plt.subplots()
     axesObject.pie(values, autopct='%1.2f',startangle=90, shadow = True)     
+    #TODO : Enter relative path location
     plt.savefig("pplot.jpg")
     plt.legend(labels)
     plt.show()   
 
+def sendFile(str):
+    connection = pika.BlockingConnection(
+    pika.ConnectionParameters(host='localhost'))
+    channel = connection.channel()
+
+    channel.queue_declare(queue='plot')
+
+    channel.basic_publish(exchange='', routing_key='plot', body=msg)
+    connection.close()
 

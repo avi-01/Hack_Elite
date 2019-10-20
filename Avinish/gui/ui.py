@@ -1,9 +1,12 @@
 import tkinter as tk
 from tkinter import *
-
+import json 
+import requests
 back = '#454647'
 titleBack = '#343b80'
 startClick = 0
+
+logInToken = ""
 
 r =tk.Tk()
 contentFrame = Frame(r, bg=back)
@@ -27,6 +30,16 @@ class history :
 		title.pack(side = TOP)
 		contentFrame.pack(side = TOP,fill=BOTH,expand=True)
 
+class plot:
+	def __init__(self) :
+		global contentFrame
+		contentFrame.destroy()
+		contentFrame = Frame(r, bg=back)
+		img = ImageTk.PhotoImage(Image.open("True1.gif"))
+		panel = Label(contentFrame, image = img)
+		panel.pack(side = "TOP", fill = "both", expand = "yes")
+
+
 def onOFF():
     global startClick 
     startClick+=1
@@ -42,7 +55,7 @@ def start():
 def stop():
     onOFFButton.configure(text='Start')
 
-class loggedIn:
+class dashboard:
 	def __init__(self):
 		r.title('Destello')
 		r.configure(background=back)
@@ -79,9 +92,6 @@ class loggedIn:
 
 		topdown.pack(side=TOP, fill=X)
 
-
-
-
 		bottomFrame = Frame(r,bg=back,padx=20,pady=30)
 		onOFFButton = Button(bottomFrame,text='Start',width=20,height=2,bg=titleBack,fg='white',font=(None,11,'bold'),border=0,command=onOFF)
 		onOFFButton.pack(side=RIGHT)
@@ -105,7 +115,10 @@ class LoginFrame(Frame):
         self.entry_password.grid(row=1, column=1,pady=(10,0))
 
         self.logbtn = Button(self, text="Login", command=self._login_btn_clicked)
-        self.logbtn.grid(columnspan=2,pady=(30,0))
+        self.logbtn.grid(column=0,pady=(30,0))
+        
+        self.signbtn = Button(self, text="Signup", command=self._signup_open)
+        self.signbtn.grid(row=2,column=1,pady=(30,0))
 
         self.pack()
 
@@ -123,16 +136,20 @@ class LoginFrame(Frame):
         data = json.loads(dic)
         print(data)
         res = requests.post(url = url , json = data) 
-        
+        print(res.text)
         resJSON = json.loads(res.text) 
         if resJSON == {}:
             tm.showerror("Login error", "Incorrect email")
         else:
-            print(resJSON['token']) 
+            saveToken(resJSON['token'])
         # if email == "john" and password == "password":
         #     tm.showinfo("Login info", "Welcome John")
         # else:
         #     tm.showerror("Login error", "Incorrect email")
+
+    def _signup_open(self):
+        self.destroy()
+        SignupFrame(Frame)
 
 
 class SignupFrame(Frame):
@@ -181,7 +198,7 @@ class SignupFrame(Frame):
         if resJSON == {}:
             tm.showerror("Signup error", "Incorrect data")
         else:
-            print(resJSON['token']) 
+            saveToken(resJSON['token'])
         # if email == "john" and password == "password":
         #     tm.showinfo("Login info", "Welcome John")
         # else:
@@ -190,10 +207,26 @@ class SignupFrame(Frame):
     def _login_open(self):
         
         self.destroy
-        lf = LoginFrame(root)
+        lf = LoginFrame(Frame)
+
+def saveToken(str):
+	#TODO: enter relative path of file
+	file = open("token.txt", "w+")
+	file.write(str)
+	file.close()
 
 class log():
     def __init__(self):
-        root = Tk()
-        sf = SignupFrame(root)
-        root.mainloop()
+        r = Tk()
+        sf = SignupFrame(r)
+        r.mainloop()
+
+with open('token.txt', 'r') as file:
+    logInToken = file.read().replace('\n', '')
+
+if len(logInToken) :
+	print("Hello")
+	dashboard()
+else :
+	print("NO")
+	log()
