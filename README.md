@@ -48,10 +48,10 @@ RabbitMQ, MongoDB, NodeJs, Tkinter(for gui), ExpressJs, youtube's and a few othe
 4. Then just run Avinish/gui/ui.py with python
 
 ### **Screenshots**
-![](https://github.com/hackabit19/Hack_Elite/blob/master/Capture.PNG)
+![Landing](https://github.com/hackabit19/Hack_Elite/blob/master/Capture.PNG)
 
-![](https://github.com/hackabit19/Hack_Elite/blob/master/Capture1.PNG)
+![Drowziness Detection](https://github.com/hackabit19/Hack_Elite/blob/master/Capture1.PNG)
 
-![](https://github.com/hackabit19/Hack_Elite/blob/master/Capture2.PNG)
-![](https://github.com/hackabit19/Hack_Elite/blob/master/Capture3.PNG)
-![](https://github.com/hackabit19/Hack_Elite/blob/master/Capture4.PNG)
+![No face detected](https://github.com/hackabit19/Hack_Elite/blob/master/Capture2.PNG)
+![Facial detection](https://github.com/hackabit19/Hack_Elite/blob/master/Capture3.PNG)
+![Blinking](https://github.com/hackabit19/Hack_Elite/blob/master/Capture4.PNG)
