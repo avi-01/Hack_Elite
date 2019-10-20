@@ -105,7 +105,7 @@ class SignupFrame(Frame):
         
         self.destroy
         lf = LoginFrame(root)
-
+    
 
 root = Tk()
 sf = SignupFrame(root)

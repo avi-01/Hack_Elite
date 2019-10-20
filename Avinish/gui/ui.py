@@ -9,6 +9,7 @@ import sys
 import gaze_dnn
 import time
 import receive
+import getProcess
 
 back = '#454647'
 titleBack = '#343b80'
@@ -111,6 +112,7 @@ class dashboard:
         # try:
         self.t1.start()
         self.t2.start()
+        getProcess.process()
         #     while True: time.sleep(100)
         # except (KeyboardInterrupt, SystemExit):
         #     print('\n! Received keyboard interrupt, quitting threads.\n')
