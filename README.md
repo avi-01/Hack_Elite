@@ -3,7 +3,7 @@
 
 #### **Problem Description :**
 
-- Concentrating while studying is one of the most difficult tasks that a human can do. With all the distractions surrounding us, it becomes even harder to focus all of our attention to reading papers, books, pdfs, etc, or even watching online course video lectures. Sometimes while reading we tend to space out and wander out in our imaginative world. So when we see the big picture even after sitting at the desk for almost 2-3 hours a day the total time we soak up the information we read or see is not more than 30min 
+- Concentrating while studying is one of the most difficult tasks that a human can do. With all the distractions surrounding us, it becomes even harder to focus all of our attention to reading papers, books, pdfs, etc, or even watching online course video lectures. Sometimes while reading we tend to space out and wander out in our imaginative world. So when we see the big picture even after sitting at the desk for almost 2-3 hours a day the total time we soak up the information we read or see is not more than 30min. 
 
 - Parents are not able to keep a check on the productiveness and activity of their children and the same cases happens with employer and employee.
 
