@@ -68,33 +68,38 @@ class dashboard:
         title = Label(titleFrame,text="Destello",bg=titleBack,fg="white",font=('Woodcut', 18,'italic'))
         title.pack(fill=X)
 
-        topdown = Frame(r,height=10)
-        eyeHealthButton = Button(topdown, text = 'Eye Health',width=20,height=2,bg="green",relief=SUNKEN,fg='white',font=(None,11,'bold'),border=0, command=eyeDetails) # add command to execute
-        eyeHealthButton.pack(side=LEFT, padx = 8, pady = 10, fill=X)
+        # topdown = Frame(r,height=10)
+        # eyeHealthButton = Button(topdown, text = 'Eye Health',width=20,height=2,bg="green",relief=SUNKEN,fg='white',font=(None,11,'bold'),border=0, command=eyeDetails) # add command to execute
+        # eyeHealthButton.pack(side=LEFT, padx = 8, pady = 10, fill=X)
 
-        seperator = Label(topdown, text = ' History ',width=20,height=2,bg="green",relief=SUNKEN,fg='white',font=(None,11,'bold'),border=0)
-        seperator.pack(side = LEFT, padx = 8, pady = 10)
+        # seperator = Label(topdown, text = ' History ',width=20,height=2,bg="green",relief=SUNKEN,fg='white',font=(None,11,'bold'),border=0)
+        # seperator.pack(side = LEFT, padx = 8, pady = 10)
 
-        historyOptions = StringVar(r)
-        historyOptions.set("Select")
+        # historyOptions = StringVar(r)
+        # historyOptions.set("Select")
 
 
-        historyDropdown = OptionMenu(topdown, historyOptions, "Past 24 hrs", "Past 30 days ")
-        historyDropdown.pack(side = LEFT, padx = 8, pady = 10)
-        addExceptionAppButton = Button(topdown, text = "Add exception app")
-        addExceptionAppButton.pack(side=LEFT, padx = 8, pady = 3)
+        # historyDropdown = OptionMenu(topdown, historyOptions, "Past 24 hrs", "Past 30 days ")
+        # historyDropdown.pack(side = LEFT, padx = 8, pady = 10)
+        # addExceptionAppButton = Button(topdown, text = "Add exception app")
+        # addExceptionAppButton.pack(side=LEFT, padx = 8, pady = 3)
 
-        logoutButton = Button(topdown, text = "Logout")
-        logoutButton.pack(side=LEFT, padx = 8, pady = 3, fill=X)
+        # logoutButton = Button(topdown, text = "Logout")
+        # logoutButton.pack(side=LEFT, padx = 8, pady = 3, fill=X)
 
-        topdown.pack(side=TOP, fill=X)
+        # topdown.pack(side=TOP, fill=X)
 
         
-        def on_field_change(self,*args):
-            print("value changed to " + historyOptions.get())
-            history()
-        historyOptions.trace('w', on_field_change)
-
+        # def on_field_change(self,*args):
+        #     print("value changed to " + historyOptions.get())
+        #     history()
+        # historyOptions.trace('w', on_field_change)
+        contentm = Frame(r,bg=back)
+        wel = Label(contentm,text="Welcome to Destello",bg=back,fg='white',font=(None, 30),pady=100)
+        desc = Label(contentm,text="We will take care of your study",bg=back,fg='#1600a6',font=(None, 18),pady=10)
+        wel.pack()
+        desc.pack()
+        contentm.pack(side=TOP,fill=BOTH,expand=True)
         r.mainloop()
 
     def onOFF(self):
