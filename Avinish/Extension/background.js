@@ -120,7 +120,7 @@ function check(url)
         return
     }
         
-    fetch("https://website-categorization-api.whoisxmlapi.com/api/v1?apiKey=at_6ET7IqGiCU7F6qrCZJmYWlrP5Oc8q&domainName="+encodeURI(domain)).then((res)=>{
+    fetch("https://website-categorization-api.whoisxmlapi.com/api/v1?apiKey=at_w5oS9FmRsWooaojsNunHpF6G1lAuu&domainName="+encodeURI(domain)).then((res)=>{
         return res.json()
     }).then((data)=>{
 
@@ -128,19 +128,19 @@ function check(url)
 
         var ok = true;
 
-        // cat.forEach(element => {
-        //     if(!allowedTags.includes(element))
-        //     {
-        //         ok=false;
-        //         return;
-        //     }
-        // });
+        cat.forEach(element => {
+            if(!allowedTags.includes(element))
+            {
+                ok=false;
+                return;
+             }
+         });
 
         console.log(domain)
         // console.log(cat)
         console.log(ok)
 
-        const url = decodeURIComponent('http://localhost:3001/website?domain=youtube.com&bool=true')   
+        const url = decodeURIComponent('http://localhost:3001/website?domain='+domain+'&bool='+ok)   
         post(url)
 
            
