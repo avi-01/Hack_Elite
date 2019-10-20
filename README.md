@@ -7,7 +7,7 @@
 
 - Also sometimes there is an important work that needs to be done immidiately due to a deadline the next day but while completing if we tend to fall asleep thereby can suffer losses. Also there is no metric currently available that tells us how productive were we the entire day and how much time were we stressed or really concentrated while studying.
 
-- Also in today's world where we have screens all around us, continuous use of these gadgets can cause fatigue and Computer Vision Syndrome(CVS) which in turn causes severe eye damage. 
+- Parents are not able to keep a check on the productiveness and activity of their children and the same cases happens with employer and employee. Also in today's world where we have screens all around us, continuous use of these gadgets can cause fatigue and Computer Vision Syndrome(CVS) which in turn causes severe eye damage. 
 
 #### **Solution we offer:**
 
