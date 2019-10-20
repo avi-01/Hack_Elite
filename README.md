@@ -26,4 +26,8 @@
 - **Desktop Application:** 
   In the laptop we will be displaying the data of his productiveness by tracking the processes happening in the laptop i.e whether the website he has opened has an educational tag or the user is reading a pdf and integrating this to our ML model for eye detection as explained above.
 
+### **Future Scope**
 
+- We would continue to work on this project even after the hacathon is over incooperating new ideas and features to this is just prototype and should not be considered as a production level code.
+- In the future we would also incooperate better UI and UX with individual user login and signup with gaze detection (which was not possible this time due to an absence of an HD camera).
+- With not just an windows based application in the future users will be able to access their profiles via websites and anroid apps as well.
