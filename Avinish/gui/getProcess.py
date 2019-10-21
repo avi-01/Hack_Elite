@@ -84,10 +84,11 @@ class process():
             if not bool(result) :
                 processesToCLose.append(runningProcess)
 
-        jsonStringProcessesToClose = json.dumps(processesToCLose, separators=(',', ':'))
-        print(jsonStringProcessesToClose)
+        if len(processesToCLose) > 0:
+            jsonStringProcessesToClose = json.dumps(processesToCLose, separators=(',', ':'))
+            print(jsonStringProcessesToClose)
 
-        popupmsg(jsonStringProcessesToClose)
+            popupmsg(jsonStringProcessesToClose)
 
         print(not bool(processesToCLose))
 

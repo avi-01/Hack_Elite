@@ -40,6 +40,7 @@ class alert(Thread):
         def callback_you(ch, method, properties, body):
             data = body.decode("utf-8")
             web = json.loads(data)
+            print(web)
             if web['bool'] == "false":
                 tm.showwarning("Youtube", "Wrong video opened:- "+web['title'])        
 

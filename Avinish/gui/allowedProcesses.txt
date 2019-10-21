@@ -27,4 +27,4 @@ ide
 ApplicationFrameHostspotify
 Chrome
 Photos
-cmdCodeMongoDBCompassMongoDBCompasspython
+cmdCodeMongoDBCompassMongoDBCompasspythonMagnifyMagnifyPOWERPNTPOWERPNT

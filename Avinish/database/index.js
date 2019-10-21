@@ -53,7 +53,7 @@ app.get('/website',(req,res)=>{
     }
 
     const msg= JSON.stringify(message)
-    console.log(msg)
+    console.log("website",msg)
     send("website",msg)
     res.send()
 })
